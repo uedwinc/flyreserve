@@ -4,5 +4,5 @@ Flyreserve is an airline reservations system comprising of a read-only flight in
 
 ## Development logic
 
-![seeds-interactions](http://www.plantuml.com/plantuml/proxy?cache=no&src=./seeds-interactions.puml)
+![seeds-interactions](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/uedwinc/flyreserve/main/seeds-interactions.puml)
 
