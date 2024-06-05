@@ -12,6 +12,22 @@ We will be using AWS for the microservice deployment
 aws configure
 ```
 
+- Export access details as env variables (Gitpod):
+
+```sh
+export AWS_ACCESS_KEY_ID=""
+gp env AWS_ACCESS_KEY_ID=""
+
+export AWS_SECRET_ACCESS_KEY=""
+gp env AWS_SECRET_ACCESS_KEY=""
+
+export AWS_DEFAULT_REGION=us-east-2
+gp env AWS_DEFAULT_REGION=us-east-2
+
+export AWS_ACCOUNT_ID=""
+gp env AWS_ACCOUNT_ID=""
+```
+
 3. Create a new group for the ops-account named Ops-Accounts
 
 ```sh
@@ -41,7 +57,7 @@ chmod +x iam-permissions.sh
 ```sh
 cd /aws-permissions-setup
 
-aws iam create-policy --policy-name EKS-Management\
+aws iam create-policy --policy-name EKS-Management \
 --policy-document file://custom-eks-policy.json
 ```
 
@@ -49,7 +65,7 @@ aws iam create-policy --policy-name EKS-Management\
 
 ```sh
 aws iam attach-group-policy --group-name Ops-Accounts \
---policy-arn {YOUR_POLICY_ARN}
+--policy-arn arn:aws:iam::"${AWS_ACCOUNT_ID}":policy/EKS-Management
 ```
 
 ## Setup infrastructure as code pipeline
