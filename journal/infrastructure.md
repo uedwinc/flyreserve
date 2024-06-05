@@ -51,3 +51,70 @@ aws iam create-policy --policy-name EKS-Management\
 aws iam attach-group-policy --group-name Ops-Accounts \
 --policy-arn {YOUR_POLICY_ARN}
 ```
+
+## Setup infrastructure as code pipeline
+
+We'll create a sandbox testing environment just as a test environment that will give us a chance to try out our IaC modules and pipelines.
+
+Each environment’s code and pipeline will be managed independently in its own code repository.
+
+We’ll build the following components:
+
+  - A GitHub-hosted Git repository for a sandbox testing environment
+  - A Terraform root module that defines the sandbox
+  - A GitHub Actions CI/CD pipeline that can create a sandbox environment
+
+### 1. Create the sandbox repository
+
+- Create a new repository on GitHub. Give the new repository the name `flyreserve-env-sandbox` and select Private from the access options. You should also tick the `Add .gitignore` checkbox and choose `Terraform` from the drop-down
+
+- You can either clone this new repository into your local development environment or use remote environemnts like Gitpod or GitHub Codespaces
+
+### 2. Writing Terraform code for the sandbox environment
+
+- We’ll be creating a simple starter file to test our Terraform-based tool chain
+
+- We'll be creating isolated folder structures for related resources
+
+- Create `global/s3` with terraform files to to define s3 bucket and dynamodb table
+
+- Initialize and apply to create s3 and dynamodb table
+
+- Next, configure terraform to store the state in s3 (with encryption and locking) by adding a `backend` configuration. 
+
+- Again, initialize so that terraform can use the s3 backend provisioned
+- `init` is idempotent (harmless to run multiple times)
+
+- Terraform will automatically detect that you already have a state file locally and prompt you to copy it to the new S3 backend. Type 'yes'
+
+- You can go to the console to see the terraform state in the s3 bucket
+
+- Create `live/main.tf`, specify backend and define some local variables for testing
+
+- `cd` into your working directory `live` and try running the `fmt` command to format your code
+
+```sh
+fmt main.tf
+```
+
+- Install provider
+
+```sh
+terraform init
+```
+
+- Validate syntax
+
+```sh
+terraform validate
+```
+
+- Plan to see what resources would be created (none for now as no resource is defined in _main.tf_)
+
+```sh
+terraform plan
+```
+
+- If you ever wanted to delete the S3 bucket and DynamoDB table
+  - Go to the Terraform code, remove the backend configuration, and rerun terraform init to copy the Terraform state back to your local disk.
+  - Run terraform destroy to delete the S3 bucket and DynamoDB table.
