@@ -13,4 +13,6 @@ aws iam attach-group-policy --group-name Ops-Accounts \
 aws iam attach-group-policy --group-name Ops-Accounts \
 --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess && \
 aws iam attach-group-policy --group-name Ops-Accounts \
---policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+--policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess && \
+aws iam attach-group-policy --group-name Ops-Accounts \
+--policy-arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess

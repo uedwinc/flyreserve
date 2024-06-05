@@ -143,7 +143,7 @@ Set up an automated CI/CD pipeline that will automatically apply the Terraform f
 
 - Go to the `flyreserve-env-sandbox` repository on GitHub.
 
-- Under _Settings_, select “Add a new secret” and create a secret called AWS_ACCESS_KEY_ID. Enter your `ops-account` access key ID
+- Under _Settings_, select `Secrets and variables | Actions | New repository secret` and create a secret called AWS_ACCESS_KEY_ID. Enter your `ops-account` access key ID
 
 - Repeat the process and create a secret named AWS_SECRET_ACCESS_KEY with the secret access key you generated earlier.
 
