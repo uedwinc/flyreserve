@@ -118,3 +118,60 @@ terraform plan
 - If you ever wanted to delete the S3 bucket and DynamoDB table
   - Go to the Terraform code, remove the backend configuration, and rerun terraform init to copy the Terraform state back to your local disk.
   - Run terraform destroy to delete the S3 bucket and DynamoDB table.
+
+### 3. Building the pipeline (GitHub Actions)
+
+Set up an automated CI/CD pipeline that will automatically apply the Terraform file that we’ve just created
+
+**Set up secrets**
+
+- Go to the `flyreserve-env-sandbox` repository on GitHub.
+
+- Under _Settings_, select “Add a new secret” and create a secret called AWS_ACCESS_KEY_ID. Enter your `ops-account` access key ID
+
+- Repeat the process and create a secret named AWS_SECRET_ACCESS_KEY with the secret access key you generated earlier.
+
+**Creating the workflow**
+
+This is the set of steps that we want to run whenever a pipeline is triggered. For our microservices infrastructure pipeline, we’ll want a workflow that validates Terraform files and then applies them to our sandbox environment.
+
+We'll use git tags for the trigger. This gives us a nice versioning history for the changes we are making to the environment. It also gives us a way of committing files to the repository without triggering a build.
+
+- Go to the `flyreserve-env-sandbox` repository on GitHub.
+
+- Under _Actions_, click `set up a workflow yourself`
+
+- Edit the YAML file for the workflow. This includes steps to:
+  - Configure the pipeline so that it runs whenever infrastructure is tagged with a label that starts with a `v`
+  - Checkout our code from Git and create a copy in the ubuntu build env
+  - Install an AWS authenticator tool
+  - Apply Terraform
+  - Publish assets. This action uploads a file called kubeconfig from the local working directory of the build environment to the GitHub Actions repository. It assumes that the file exists, so we’ll need to create that file.
+
+- Lastly, commit the new file to the GitHub repository
+
+**Testing the Pipeline**
+
+- First pull the changes made into the clone on the local environment
+
+```sh
+git pull
+```
+
+- Create a tag to trigger Actions
+
+```sh
+git tag -a v0.1 -m "workflow test"
+```
+
+- Push the tag into remote GitHub repository
+
+```sh
+git push origin v0.1
+```
+
+- This should automatically trigger the workflow build in GitHub Actions.
+
+- To see the status of the run, go back to the browser-based GitHub interface and navigate to Actions. Confirm that our workflow job has completed successfully.
+
+- Click on the build of the workflow (Sandbox Environment Build) to see more details.
