@@ -259,7 +259,7 @@ git commit -m "network module created"
 
 ### 2. Create a sandbox network
 
-- Go to _main.tf_ for the _env-sandbox_ repository and enter a network configuration section
+- Go to _main.tf_ for the _flyreserve-env-sandbox_ repository and enter a network configuration section
 
 - Note that `YOUR_NETWORK_MODULE_REPO_PATH` equals The path to your module’s repository in GitHub. For example: github.com/***/module-aws-network
 
