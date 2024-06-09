@@ -257,7 +257,7 @@ git commit -m "network module created"
 
 - We can use the module to create a real network in our sandbox environment.
 
-### 2. Create a sandbox network
+#### Create a sandbox network
 
 - Go to _main.tf_ for the _flyreserve-env-sandbox_ repository and enter a network configuration section
 
@@ -303,13 +303,9 @@ git push origin v1.0
 aws ec2 describe-vpcs --filters Name=cidr,Values=10.10.0.0/16
 ```
 
-5. Kubernetes module
+### 2. Kubernetes module
 
-- Clone the _module-aws-kubernetes_ GitHub repository into your local environment and provision the following in the root directory
-
-  + [**outputs.tf**]()
-  + [**main.tf**]()
-  + [**variables.tf**]()
+- Clone the _flyreserve-aws-kubernetes-module_ GitHub repository into your local environment and provision the following in the root directory: main.tf, variables.tf and outputs.tf
 
 - Add a README to the repository for description
 
@@ -331,9 +327,9 @@ git push origin
 
 - We can use the module to create a kubernetes cluster in our sandbox environment.
 
-6. Create a sandbox Kubernetes cluster
+#### Create a sandbox Kubernetes cluster
 
-- Update the _main.tf_ file of the sandbox environment at the #EKS Configuration placeholder so that it uses the Kubernetes module
+- Update the _main.tf_ file of the sandbox environment at the `#EKS Configuration` placeholder so that it uses the Kubernetes module
 
 - Commit, push and tag this file into your CI/CD infrastructure pipeline and create a working EKS cluster
 
@@ -355,9 +351,9 @@ aws eks list-clusters
 
 - Destroy custer environment when not in use
 
-7. Setting Up Argo CD
+### 3. Setting Up Argo CD
 
--  Install a GitOps deployment tool that will be used to release our services into our environment’s Kubernetes cluster
+- Install a GitOps deployment tool that will be used to release our services into our environment’s Kubernetes cluster
 
 - We’ll be installing Argo CD on the Kubernetes system that we’ve just instantiated. We’ll use a Kubernetes provider;
 this enables Terraform to issue Kubernetes commands and install the application to our new cluster. We’ll also use a package-management system called Helm to do the installation
@@ -382,7 +378,7 @@ git commit -m "ArgoCD module init"
 git push origin
 ```
 
-8. Installing Argo CD in the sandbox
+#### Installing Argo CD in the sandbox
 
 - Modify the sandbox module’s _main.tf_ file to install Argo CD for #GitOps Configuration
 
@@ -398,7 +394,7 @@ git tag -a v1.2 -m "ArgoCD build"
 git push origin v1.2
 ```
 
-**Testing the Environment**
+## Testing the Environment
 
 - In the Terraform code for our Kubernetes module, we added a local file resource to create a kubeconfig file. Now, we need to download that file so that we can connect to the EKS cluster using the kubectl application
 
@@ -430,7 +426,7 @@ kubectl get svc
 kubectl get pods -n "argo"
 ```
 
-**Cleaning Up the Infrastructure**
+## Cleaning Up the Infrastructure
 
 1. To destroy the sandbox environment:
 
