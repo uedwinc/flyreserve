@@ -353,12 +353,11 @@ aws eks list-clusters
 
 ### 3. Setting Up Argo CD
 
-- Install a GitOps deployment tool that will be used to release our services into our environment’s Kubernetes cluster
+- Install a GitOps deployment tool that will be used to release the services into the environment’s Kubernetes cluster
 
-- We’ll be installing Argo CD on the Kubernetes system that we’ve just instantiated. We’ll use a Kubernetes provider;
-this enables Terraform to issue Kubernetes commands and install the application to our new cluster. We’ll also use a package-management system called Helm to do the installation
+- We’ll be installing Argo CD on the Kubernetes system that we’ve just instantiated. We’ll use a Kubernetes provider; this enables Terraform to issue Kubernetes commands and install the application to our new cluster. We’ll also use the package-management system Helm to do the installation
 
-- Create a _main.tf_ file in the root directory of the module-argo-cd Git repository
+- Create a _main.tf_ file in the root directory of the flyreserve-argo-cd-module Git repository
 
 - Create a _variables.tf_ file for Argo CD
 
@@ -380,9 +379,9 @@ git push origin
 
 #### Installing Argo CD in the sandbox
 
-- Modify the sandbox module’s _main.tf_ file to install Argo CD for #GitOps Configuration
+- Modify the sandbox module’s _main.tf_ file to install Argo CD for `#GitOps Configuration`
 
-- Wait for the EKS build to complete 
+- Wait for the EKS build to complete
 
 - Tag, commit, and push the Terraform file into your CI/CD pipeline
 
