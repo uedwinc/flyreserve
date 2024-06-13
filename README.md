@@ -13,3 +13,7 @@ Flyreserve is an airline reservations system comprising of a read-only flight in
 ## Microservices Development
 
 - [ ] [Microservices Setup](journal/microservices.md)
+
+## Microservices Release
+
+- [ ] [Release and Change](journal/deployment.md)
