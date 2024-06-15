@@ -190,6 +190,8 @@ git push origin v0.1
 
 - To see the status of the run, go back to the browser-based GitHub interface and navigate to Actions. Confirm that our workflow job has completed successfully.
 
+![success-build](../images/success-build.png)
+
 - Click on the build of the workflow (Sandbox Environment Build) to see more details.
 
 ## Setup Cloud Infrastructure
@@ -303,6 +305,8 @@ git push origin v1.0
 aws ec2 describe-vpcs --filters Name=cidr,Values=10.10.0.0/16
 ```
 
+![describe-vpc](../images/describe-vpc.png)
+
 ### 2. Kubernetes module
 
 - Clone the _flyreserve-aws-kubernetes-module_ GitHub repository into your local environment and provision the following in the root directory: main.tf, variables.tf and outputs.tf
@@ -348,6 +352,10 @@ git push origin v1.1
 ```sh
 aws eks list-clusters
 ```
+
+![list-clusters](../images/list-clusters.png)
+
+![cluster-console](../images/cluster-console.png)
 
 - Destroy custer environment when not in use
 
