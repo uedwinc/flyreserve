@@ -32,9 +32,45 @@ Clone the following [repository](https://github.com/implementing-microservices/m
 
 Final repository for the flights microservice: https://github.com/uedwinc/flyreserve-ms-flights
 
+- Use GitPod to test the containers locally
+
+- When everything is working, you should be able to access your /flights endpoint locally at a URL like the following: http://0.0.0.0:5501/flights?flight_no=AA34&departure_date_time=2020-05-17T13:20
+
+![flight-no](../images/flight-no.png)
+
+- The seat_maps endpoint should appear in a URL: http://0.0.0.0:5501/flights/AA2532/seat_map
+
+![seat-map](../images/seat-map.png)
+
 **Health checks**
 
-(...)
+To manage the life cycle of the containers that the app will be deployed into, most container-management solutions (e.g., Kubernetes) need a service to expose a health endpoint. In the case of Kubernetes, you should generally provide liveness and readiness endpoints.
+
+A simple “Am I live?” check at **/ping** (known as a _liveness probe_ in Kubernetes) and a more advanced “Is the database also ready? Can I actually do useful things?” check (known as the _readiness probe_ in Kubernetes) at **/health** is implemented. Using two probes for overall health is very convenient since a microservice being up doesn’t always mean that it is fully functional. If its dependency, such as a database, is not up yet or is down, it won’t be actually ready for useful work.
+
+If everything was done correctly and the microservice is up and running in a healthy way, if you now run `curl http://0.0.0.0:5501/health`, you should get a health endpoint output that looks like the following:
+
+```json
+{
+  "details": {
+    "db:dbQuery": {
+      "status": "pass",
+      "metricValue": 15,
+      "metricUnit": "ms",
+      "time": "2020-06-28T22:32:46.167Z"
+    }
+  },
+  "status": "pass"
+}
+```
+
+- If you run `curl http://0.0.0.0:5501/ping` instead, you should get a simpler output:
+
+```json
+{ "status": "pass" }
+```
+
+- We now have a fully functioning ms-flights microservice implemented with Node.js and MySQL
 
 ### 2. Reservations microservice
 
