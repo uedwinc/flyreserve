@@ -130,15 +130,21 @@ To check out repositories of individual microservices under the umbrella reposit
 
 The idea is to make it easy to descend into a subfolder of your workspace repository containing a microservice and treat it as a fully functioning repository, which you can update, commit code in, and push to.
 
-We’ll start by indicating the two repos we’ve just created as the components of the new workspace, by editing the _fgs.json_ file to look something like the following:
+Create a new GitHub repository: flyreserve-microservice-workspace
+
+Clone the following [repository](https://github.com/implementing-microservices/ms-reservations) and change the remote origin url to the new GitHub repository
+
+Final repository for the flights microservice: https://github.com/uedwinc/flyreserve-microservice-workspace
+
+We’ll start by indicating the two microservice repos as the components of the new workspace, by editing the _fgs.json_ file to look something like the following:
 
 ```json
 {
   "ms-flights" : {
-    "url" : "https://github.com/implementing-microservices/ms-flights"
+    "url" : "https://github.com/uedwinc/flyreserve-ms-flights"
   },
   "ms-reservations" : {
-    "url" : "https://github.com/implementing-microservices/ms-reservations"
+    "url" : "https://github.com/uedwinc/flyreserve-ms-reservations"
   }
 }
 ```
@@ -155,44 +161,11 @@ This operation also helpfully adds the checked-out repositories to the _.gitigno
 
 We also need to edit the bin/start.sh and bin/stop.sh scripts to make changes from the default
 
-  1. _bin/start.sh_
-
-```sh
-#!/usr/bin/env bash
-set -eu
-
-export COMPOSE_PROJECT_NAME=msupandrunning
-
-pushd ms-flights && make start
-popd
-pushd ms-reservations && make start
-popd
-
-make proxystarts
-```
-
-  2. _bin/stop.sh_
-
-```sh
-#!/usr/bin/env bash
-set -eu
-
-export COMPOSE_PROJECT_NAME=msupandrunning
-
-pushd ms-flights && make stop
-popd
-
-pushd ms-reservations && make stop
-popd
-
-make proxystop
-```
-
 To keep things simple yet powerfully automated, our workspace setup is using the [Traefik edge router](https://traefik.io/traefik/) for seamless routing to the microservices. It gets installed by our [docker-compose.yml](https://github.com/inadarei/microservices-workspace/blob/master/docker-compose.yml) file
 
-We will need to add Traefik-related labels to the `dockercompose.yml` files of both microservices to ensure proper routing of those services:
+We will need to add Traefik-related labels to the `docker-compose.yml` files of both microservices to ensure proper routing of those services:
 
-  1. _ms-flights/docker-compose.yaml_
+  1. _flyreserve-ms-flights/docker-compose.yaml_
 
 ```yml
 services:
@@ -200,10 +173,10 @@ services:
     container_name: ms-flights
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ms-flights.rule=PathPrefix(`/reservations`)"
+      - "traefik.http.routers.ms-flights.rule=PathPrefix(`/flights`)"
 ```
 
-  2. _ms-reservations/docker-compose.yaml_
+  2. _flyreserve-ms-reservations/docker-compose.yaml_
 
 ```yml
 services:
@@ -214,11 +187,7 @@ services:
       - "traefik.http.routers.ms-reservations.rule=PathPrefix(`/reservations`)"
 ```
 
-We also need to update the umbrella project’s name (which serves as the namespace and network name for all services) in the workspace’s makefile, so that instead of `project:=ms-workspace-demo`, it says:
-
-```
-project:=msupandrunning
-```
+We also need to update the umbrella project’s name (which serves as the namespace and network name for all services) in the workspace’s makefile, so that it says: `project:=flyreserve`.
 
 Once you bring up the workspace by running `make start` at the workspace level, you will be able to access both microservices in their attached-to-workspace form
 
