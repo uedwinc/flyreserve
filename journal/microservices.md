@@ -48,23 +48,9 @@ To manage the life cycle of the containers that the app will be deployed into, m
 
 A simple “Am I live?” check at **/ping** (known as a _liveness probe_ in Kubernetes) and a more advanced “Is the database also ready? Can I actually do useful things?” check (known as the _readiness probe_ in Kubernetes) at **/health** is implemented. Using two probes for overall health is very convenient since a microservice being up doesn’t always mean that it is fully functional. If its dependency, such as a database, is not up yet or is down, it won’t be actually ready for useful work.
 
-If everything was done correctly and the microservice is up and running in a healthy way, if you now run `curl http://0.0.0.0:5501/health`, you should get a health endpoint output that looks like the following:
+If everything was done correctly and the microservice is up and running in a healthy way, if you now run `curl http://0.0.0.0:5501/health`, you should get a health endpoint output json.
 
-```json
-{
-  "details": {
-    "db:dbQuery": {
-      "status": "pass",
-      "metricValue": 15,
-      "metricUnit": "ms",
-      "time": "2020-06-28T22:32:46.167Z"
-    }
-  },
-  "status": "pass"
-}
-```
-
-- If you run `curl http://0.0.0.0:5501/ping` instead, you should get a simpler output:
+If you run `curl http://0.0.0.0:5501/ping` instead, you should get a simpler output:
 
 ```json
 { "status": "pass" }
@@ -81,6 +67,58 @@ Create a new GitHub repository: flyreserve-ms-reservations
 Clone the following [repository](https://github.com/implementing-microservices/ms-reservations) and change the remote origin url to the new GitHub repository
 
 Final repository for the flights microservice: https://github.com/uedwinc/flyreserve-ms-reservations
+
+You should be able to run `make` from the top level of the source code, which will build and run the project at `0.0.0.0:7701`.
+
+If you encounter issues at any point or would like to check out the application logs for some reason, you can do this using the logs-app make target:
+
+```sh
+make logs-app
+```
+
+You may notice that the logs say the service is running on port 5000, but that is true inside the Docker container; it’s not port 5000 on the host machine! We map the standard Flask port 5000 to 7701 on the host machine (your machine). You can view the combined app and database logs by running `make logs`, or just the database logs by running `make logs-db`
+
+- Now let’s run several curl commands to insert a couple of reservations:
+
+```sh
+curl --header "Content-Type: application/json" \
+  --request PUT \
+  --data '{"seat_num":"12B","flight_id":"werty", "customer_id": "dfgh"}' \
+  # If you are using Gitpod, replace the next line with your Gitpod port url like https://7701-uedwinc-flyreservemsres-jku61f7g1e6.ws-eu114.gitpod.io/reservations
+  http://0.0.0.0:7701/reservations
+```
+
+```sh
+curl --header "Content-Type: application/json" \
+  --request PUT \
+  --data '{"seat_num":"12C","flight_id":"werty", "customer_id": "jkfl"}' \
+  http://0.0.0.0:7701/reservations
+```
+
+![reserve-success](../images/reserve-success.png)
+
+- We can also test that our protection against accidental double-bookings works. Let’s verify this by attempting to reserve an already reserved seat (e.g., 12C):
+
+```sh
+curl -v --header "Content-Type: application/json" \
+  --request PUT \
+  --data '{"seat_num":"12C","flight_id":"werty", "customer_id": "another"}' \
+  http://0.0.0.0:7701/reservations
+```
+
+This will respond with HTTP 403 and an error message:
+
+![cant-double-book](../images/cant-double-book.png)
+
+To test the reservation retrieval endpoint, we can issue a curl command and verify that we receive the expected JSON response or confirm the endpoint on browser:
+
+```sh
+curl -v http://0.0.0.0:7701/reservations?flight_id=werty
+```
+
+![response-json](../images/response-json.png)
+
+Now what we need to do is figure out a way to execute these two microservices (and any additional future components you may create) as a single unit. For this, we will introduce the notion of an “umbrella project”
 
 ## Hooking Services Up with an Umbrella Project
 
