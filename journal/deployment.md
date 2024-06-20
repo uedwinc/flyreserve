@@ -32,7 +32,7 @@ We need to provision two different databases in the infrastructure environment. 
 
 For our build, we’ve decided to use AWS managed versions of these database products. We will create Terraform-based modules to provision AWS hosted and managed database services for each environment. We will use the AWS ElastiCache service to provision a Redis data store and the AWS Relational Database (RDS) to provision a MySQL instance.
 
-Create a new Terraform module repository (_flyreserve-aws-db-module_) with _main.tf_ and _variables.tf_ (https://github.com/implementing-microservices/module-aws-db). This module provisions both types of databases as well as the network configuration and access policies that the database service needs for operation.
+Create a new Terraform module repository (_flyreserve-aws-db-module_) with _main.tf_ and _variables.tf_ (https://github.com/uedwinc/flyreserve-aws-db-module). This module provisions both types of databases as well as the network configuration and access policies that the database service needs for operation.
 
 ## The Staging Infrastructure Project
 
@@ -42,6 +42,6 @@ We’ll use Terraform to define the environment in code using the modules we wro
 
 Create a new private repository named _flyreserve-infra-staging-env_
 
-Start off with all the code from the _flyreserve-env-sandbox_ repository
+Start off with all the code from the _flyreserve-env-sandbox_ repository except the `global/s3` directory as s3 only need to be created once.
 
 ### 1. Configuring the Staging Workflow

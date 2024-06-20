@@ -159,7 +159,7 @@ make update
 
 This operation also helpfully adds the checked-out repositories to the _.gitignore_ of the parent folder, to prevent the parent repository trying to double-commit them into the wrong place
 
-We also need to edit the bin/start.sh and bin/stop.sh scripts to make changes from the default
+We also need to edit the `bin/start.sh` and `bin/stop.sh` scripts to make changes from the default.
 
 To keep things simple yet powerfully automated, our workspace setup is using the [Traefik edge router](https://traefik.io/traefik/) for seamless routing to the microservices. It gets installed by our [docker-compose.yml](https://github.com/inadarei/microservices-workspace/blob/master/docker-compose.yml) file
 
