@@ -42,6 +42,84 @@ We’ll use Terraform to define the environment in code using the modules we wro
 
 Create a new private repository named _flyreserve-infra-staging-env_
 
-Start off with all the code from the _flyreserve-env-sandbox_ repository except the `global/s3` directory as s3 only need to be created once.
+Start off with all the code from the _flyreserve-env-sandbox_ repository except the `global/s3` directory as s3 only need to be created once. There's also no need to have the live folder, so you can move the contents directly into the root directory. Adjust your workflow to reflect that.
 
 ### 1. Configuring the Staging Workflow
+
+We’ll need to add AWS access management credentials and a MySQL password to the repository’s secrets
+
+Add the following secrets:
+
+|Key|Value|
+|---|-----|
+|AWS_ACCESS_KEY_ID|The access key ID for your AWS operator user|
+|AWS_SECRET_ACCESS_KEY|The secret key for your operator user|
+|MYSQL_PASSWORD|microservices|
+|
+
+Use the value "microservices" for the MYSQL_PASSWORD secret. This password will be used when we provision the AWS RDS database
+
+The staging workflow will automatically generate a kubeconfig file as part of the provisioning process. This file contains connection information so you can connect to the Kubernetes cluster that we’ll create on EKS. If this code repository is public, that file will be available to anyone who visits your repository. In theory, this shouldn’t be a problem. Our EKS cluster requires AWS credentials to authenticate and connect. That means even with the kubeconfig file an attacker shouldn’t be able to connect to your cluster, unless they also have your AWS credentials.
+
+### 2. Editing the Staging Infrastructure Code
+
+We’ll be editing the _main.tf_ file that defines the staging environment
+
+|Resource|Property name|Description|
+|--------|-------------|-----------|
+|terraform|bucket|The name of the S3 bucket for your Terraform backend|
+|terraform|key|The identifier to use for your backend data in S3|
+|terraform|region|Your AWS region|
+|locals|aws_region|Your AWS region|
+|
+
+Next, we’ll need to give our AWS operator a few more permissions since we’ve added some new database modules, but the operator account we’re using isn’t allowed to create or work with those AWS resources. We’ll do this by creating a new IAM group for database work. When the group is set up, we’ll add our operator account to the group so it inherits those permissions
+
+- Run the following AWS CLI command to create a new group called DB-Ops:
+
+```sh
+aws iam create-group --group-name DB-Ops
+```
+
+- Next, we can run the following command to attach access policies for RDS and ElastiCache to the group:
+
+```sh
+aws iam attach-group-policy --group-name DB-Ops \
+--policy-arn arn:aws:iam::aws:policy/AmazonRDSFullAccess && \
+aws iam attach-group-policy --group-name DB-Ops \
+--policy-arn arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess
+```
+
+- Finally, use a CLI command to add our Ops account to the group we’ve just created:
+
+```sh
+aws iam add-user-to-group --user-name ops-account --group-name DB-Ops
+```
+
+- Let’s do a quick test to make sure our updated infrastructure code works. Run the following Terraform commands to format and validate our updated code:
+
+```sh
+terraform fmt
+terraform init
+terraform validate
+terraform plan
+```
+
+- Now we’re ready to commit the infrastructure code and kick off the CI/CD pipeline. Let’s start by committing our updated Terraform code to your forked repository:
+
+```sh
+git add .
+git commit -m "Staging environment with databases"
+git push origin
+```
+
+- Our workflow gets triggered when we push a release tag that starts with a v. Use the following Git commands to create a new v1.0 tag and push it to your forked repository:
+
+```sh
+git tag -a v1.0 -m "Initial staging environment build"
+git push origin v1.0
+```
+
+You can validate the status of your pipeline run in the browser-based GitHub console. If the pipeline job has succeeded, you now have a staging environment with a Kubernetes cluster and MySQL and Redis databases running and ready to use
+
+We’ll need that Kubernetes cluster for our microservices deployment. So our next step will be to validate that it is up and running
