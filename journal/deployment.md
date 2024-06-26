@@ -65,14 +65,6 @@ The staging workflow will automatically generate a kubeconfig file as part of th
 
 We’ll be editing the _main.tf_ file that defines the staging environment
 
-|Resource|Property name|Description|
-|--------|-------------|-----------|
-|terraform|bucket|The name of the S3 bucket for your Terraform backend|
-|terraform|key|The identifier to use for your backend data in S3|
-|terraform|region|Your AWS region|
-|locals|aws_region|Your AWS region|
-|
-
 Next, we’ll need to give our AWS operator a few more permissions since we’ve added some new database modules, but the operator account we’re using isn’t allowed to create or work with those AWS resources. We’ll do this by creating a new IAM group for database work. When the group is set up, we’ll add our operator account to the group so it inherits those permissions
 
 - Run the following AWS CLI command to create a new group called DB-Ops:
