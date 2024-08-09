@@ -8,7 +8,7 @@
 
 - We’ll be using three different GitHub repositories with their own pipelines and assets
 
-## Provisioning the AWS-based staging environment
+## Defining the AWS-based staging environment
 
 Update the infrastructure code of the sandbox env to reflect the needs of the flight information and flight reservation microservices
 
@@ -55,7 +55,6 @@ Add the following secrets:
 |AWS_ACCESS_KEY_ID|The access key ID for your AWS operator user|
 |AWS_SECRET_ACCESS_KEY|The secret key for your operator user|
 |MYSQL_PASSWORD|microservices|
-|
 
 Use the value "microservices" for the MYSQL_PASSWORD secret. This password will be used when we provision the AWS RDS database
 
@@ -114,7 +113,9 @@ git tag -a v1.0 -m "Initial staging environment build"
 git push origin v1.0
 ```
 
-You can validate the status of your pipeline run in the browser-based GitHub console. If the pipeline job has succeeded, you now have a staging environment with a Kubernetes cluster, MySQL and Redis databases running and ready to use
+You can validate the status of your pipeline run in the browser-based GitHub console. If the pipeline job has succeeded, you now have a staging environment with a Kubernetes cluster, MySQL and Redis databases running and ready to use.
+
+![success-run](../images/success-run.png)
 
 We’ll need that Kubernetes cluster for our microservices deployment. So our next step will be to validate that it is up and running
 
@@ -134,6 +135,8 @@ To confirm that our staging cluster is running and the Kubernetes objects have b
 kubectl get svc --all-namespaces
 ```
 
+![all-namespaces](../images/all-namespaces.png)
+
 In the result you should see a list of all the Kubernetes services that we’ve deployed. That should include services for the Argo CD application and the Traefik ingress service. That means that our cluster is up and running and the services we need have been successfully provisioned
 
 ### 5. Create a Kubernetes secret
@@ -147,7 +150,7 @@ kubectl create secret generic \
 mysql --from-literal=password=microservices -n microservices
 ```
 
-The built-in secrets functions of Kubernetes are useful, but we recommend that you use something more feature rich for a proper implementation. There are lots of options available in this area, including [HashiCorp Vault](https://www.vaultproject.io/)
+The built-in secrets functions of Kubernetes are useful, but it is recommended that you use something more feature rich for a proper implementation. There are lots of options available in this area, including [HashiCorp Vault](https://www.vaultproject.io/)
 
 We now have a staging environment with an infrastructure that fits the needs of the microservices we’ve developed 
 
@@ -210,6 +213,8 @@ Let's just trigger this build using the Git‐Hub browser-based UI
 
 - To validate that the container has been shipped, access your Docker Hub account in the browser and take a look at your repositories. You should see an entry for the flights container that was just pushed.
 
+![uedwinc-flights](../images/uedwinc-flights.png)
+
 - We now have a containerized ms-flights microservice ready to be deployed into our staging environment. With our microservices pushed into the container registry, we can move on to the work of deploying the container into our staging environment.
 
 ### Deploying the Flights Service Container
@@ -230,7 +235,7 @@ helm create ms-flights
 
 - When it’s done, Helm will have created a basic package that contains a *chart.yaml* file which describes our chart, a *values.yaml* file we can use to customize chart values, and a *templates* directory that contains a whole set of Kubernetes YAML templates for a basic deployment.
 
-+ Update the flights deployment template
+#### Update the flights deployment template
 
 - The _/ms-flights/templates/deployment.yaml_ file is a Kubernetes object description file that declares the target deployment state for a Pod.
 
@@ -243,7 +248,7 @@ helm create ms-flights
 - See updated file: https://github.com/implementing-microservices/ms-deploy/blob/master/ms-flights/templates/deployment.yaml
 - Change readinessProbe path from /ping to /health
 
-+ Set package values
+#### Set package values
 
 - We’ll need to update the details for the Docker image. Open the _values.yaml_ file in your favorite text editor and find the image key at the beginning of the YAML file. Update image with the details:
 
@@ -286,7 +291,7 @@ ingress:
 
 - For a production environment, we’d probably have more values and template changes we’d want to make. But to get up and running, this is more than enough.
 
-+ Test and commit the package
+#### Test and commit the package
 
 - The last thing we’ll need to do is a quick dry-run test to ensure that we haven’t made any syntax errors. You’ll need to have connectivity to your Kubernetes cluster, so make sure you still have that environment accessible.
 
@@ -307,6 +312,8 @@ NOTES:
 1. Get the application URL by running these commands:
 http://flightsvc.com/flights
 ```
+
+![helm-returns](../images/helm-returns.png)
 
 - If everything looks good, commit the finished Helm files to the GitHub repository:
 
@@ -336,6 +343,14 @@ kubectl get pods -n "argocd" | grep argocd-server
 
 - Copy the name of the Pod somewhere as that will be the password we’ll use to log in.
 
+- To get the default password, use:
+
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+# Documentation: https://stackoverflow.com/questions/68297354/what-is-the-default-password-of-argocd
+```
+
 - In order to access the login screen and use our credentials, we’ll need to set up a port-forwarding rule. That’s because we haven’t properly defined a way to access our Kubernetes cluster from the internet. But thankfully kubectl provides a handy built-in tool for forwarding requests from your local machine into the cluster. 
 
 Use the following to get it running:
@@ -347,6 +362,8 @@ kubectl port-forward svc/flyreserve-argocd-server 8443:443 -n "argocd"
 - Now you should be able to navigate to _localhost:8443_ in your browser. You’ll almost definitely get a warning indicating that the site can’t be trusted. That’s OK and is expected at this point. Let your browser know that it is OK to proceed and you should then see a login screen
 
 - Enter "admin" as your user ID and use the password you noted earlier and log in. If you can log in successfully, you’ll see a dashboard screen. Now we can move on to creating a reference to our flight information service deployment.
+
+![argocd-in](../images/argocd-in.png)
 
 2. Sync and deploy a microservice
 
