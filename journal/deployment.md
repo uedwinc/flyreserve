@@ -325,7 +325,7 @@ git push origin
 
 - Now that the package files are available in the deployment monorepo, we’re ready to use them with the Argo CD GitOps deployment tool.
 
-**Argo CD for GitOps Deployment**
+#### Argo CD for GitOps Deployment
 
 - Argo CD is a GitOps deployment tool, designed to use a Git repository as the source for the desired deployment state for our workloads and services. When it checks a repository that we’ve specified, it determines whether the target state we defined matches the running state in the environment. If it doesn’t, Argo CD can “synchronize” the deployment to match what we declared in our Helm charts.
 
@@ -426,7 +426,7 @@ response message.
 
 - The HTTP request we’ve just made calls the ingress service, which in turn routes the message to the flights microservice based on the ingress rule we defined earlier. The flights microservice retrieves data from the database service we provisioned and returns a result to us through the load balancer. With that request, we’ve been able to bring together all the parts of our architecture deployment and test an end-to-end microservices architecture!
 
-**Clean up**
+## Clean up
 
 - We’ll use a local Terraform client to bring down the infrastructure. Make sure you’re in the directory where your staging Terraform files are and run the following command:
 
